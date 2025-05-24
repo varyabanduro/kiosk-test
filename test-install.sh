@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-if [[ -f '/etc/systemd/system/kiosk.service' ]] && [[ -f '/usr/local/?/kiosk' ]]; then
-  KIOSK_IS_INSTALLED_BEFORE_RUNNING_SCRIPT=1
-else
-  KIOSK_IS_INSTALLED_BEFORE_RUNNING_SCRIPT=0
-fi
+# if [[ -f '/etc/systemd/system/kiosk.service' ]] && [[ -f '/usr/local/?/kiosk' ]]; then
+#   KIOSK_IS_INSTALLED_BEFORE_RUNNING_SCRIPT=1
+# else
+#   KIOSK_IS_INSTALLED_BEFORE_RUNNING_SCRIPT=0
+# fi
 
-PROJECT_DIR=${PROJECT_DIR:-/usr/local/?/kiosk}
+PROJECT_DIR=/usr/local/?/kiosk
 INSTALL_USER='nobody'
 
 identify_the_operating_system_and_architecture() {
@@ -89,6 +89,18 @@ remove_kiosk() {
   systemctl daemon-reload
   echo "You may need to execute a command to remove dependent software: $PACKAGE_MANAGEMENT_REMOVE"
   exit 0
+}
+
+install_software() {
+  package_name="$1"
+  file_to_detect="$2"
+  type -P "$file_to_detect" >/dev/null 2>&1 && return
+  if ${PACKAGE_MANAGEMENT_INSTALL} "$package_name" >/dev/null 2>&1; then
+    echo "info: $package_name is installed."
+  else
+    echo "error: Installation of $package_name failed, please check your network."
+    exit 1
+  fi
 }
 
 main() { 
