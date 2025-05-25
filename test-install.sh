@@ -115,12 +115,12 @@ install_venv() {
   }
 
   cat > "${PROJECT_DIR}/requirements.txt" <<EOF
-Это первая строка.
-Это вторая строка.
+python-vlc
+requests
 EOF
   
   PIP="${PROJECT_DIR}/.venv/bin/pip"
-  "$PIP" install --upgrade
+  "$PIP" install --upgrade pip
   "$PIP" install -r "${PROJECT_DIR}/requirements.txt" || {
       echo "error: Не удалось установить зависимости"
       return 1
