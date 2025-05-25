@@ -177,9 +177,10 @@ EOF
 
   chmod 644 "$SERVICE_FILE"
   systemctl daemon-reload
+  systemctl enable kiosk.service
   echo "info: kiosk.service unit create."
   echo "Add PUBLIC_PATH and SHOW_TIME in $CONFIG_DIR/config.env"
-  echo "and systemctl enable kiosk.service"
+  echo "and sudo systemctl restart kiosk.service"
 }
 
 main() { 
