@@ -178,7 +178,7 @@ EOF
   chmod 644 "$SERVICE_FILE"
   systemctl daemon-reload
   echo "info: kiosk.service unit create."
-  echo "Add PUBLIC_PATH and SHOW_TIME in $CONFIG_FILE"
+  echo "Add PUBLIC_PATH and SHOW_TIME in $CONFIG_DIR/config.env"
   echo "and systemctl enable kiosk.service"
 }
 
