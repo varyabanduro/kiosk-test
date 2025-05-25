@@ -138,7 +138,7 @@ class Media:
         """Пиводит папку в соответствие с ЯДиском"""
         folder = self._get_local_media()
         disk = self._get_disk_media()
-        if type(disk) == str():
+        if isinstance(disk, str):
             with self.lock:
                 self.download = disk
             return 
