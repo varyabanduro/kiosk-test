@@ -123,7 +123,7 @@ class Media:
                         f.write(chunk)
 
         except Exception as e:
-            logging.warning(f"Ошибка скачивания {filename}")
+            logging.warning(f"Ошибка скачивания {filename} {e}")
         else:
             logging.info(f"Файл {filename} скачен")
 
