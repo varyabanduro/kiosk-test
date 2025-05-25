@@ -174,9 +174,9 @@ EOF
   chmod 644 "$SERVICE_FILE"
   echo "info: kiosk.service unit-файл создан."
 
-  #systemctl daemon-reload
-  #systemctl enable kiosk.service
-  #systemctl restart kiosk.service
+  systemctl daemon-reload
+  systemctl enable kiosk.service
+  systemctl restart kiosk.service
   echo "info: kiosk.service включён и запущен."
 }
 
