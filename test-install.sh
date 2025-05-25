@@ -98,12 +98,12 @@ remove_kiosk() {
 
 install_software() {
   package_name="$1"
-  file_to_detect="$2"
   
   if apt list --installed "$package_name" 2>/dev/null | grep -q "^$package_name/"; then
-    echo "✅ Пакет $package_name уже установлен"
+    echo "info: $package_name is already installed."
     return 0
   fi
+  
   if ${PACKAGE_MANAGEMENT_INSTALL} "$package_name" >/dev/null 2>&1; then
     echo "info: $package_name is installed."
   else
@@ -187,9 +187,9 @@ main() {
   
   [[ "$REMOVE" -eq '1' ]] && remove_kiosk
 
-  install_software 'curl' 'curl'
-  install_software "python-pip" "pip3"
-  install_software "python3-tk" ""
+  install_software 'curl'
+  install_software "python3-pip" 
+  install_software "python3-tk"
 
   install -o nobody -g nogroup -m 755 -d \
     "$PROJECT_DIR" \
