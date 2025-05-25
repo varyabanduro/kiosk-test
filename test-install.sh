@@ -200,7 +200,7 @@ main() {
     "$PROJECT_DIR" \
     "$PROJECT_DIR/files" \
     "$PROJECT_DIR/media" \
-    "$CONFIG_DIR
+    "$CONFIG_DIR"
 
   install -o nobody -g nogroup -m 755 /dev/null "$CONFIG_DIR/config.env""
   
