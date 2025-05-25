@@ -124,6 +124,7 @@ install_venv() {
   cat > "${PROJECT_DIR}/requirements.txt" <<EOF
 python-vlc
 requests
+dotenv
 EOF
   
   PIP="${PROJECT_DIR}/.venv/bin/pip"
