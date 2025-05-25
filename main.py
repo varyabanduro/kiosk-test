@@ -12,8 +12,8 @@ from contextlib import contextmanager
 
 logging.basicConfig(level=logging.INFO)
 
-MEDIA_PATH = "/home/oem/kiosk/media"
-BASE_PATH = "/home/oem/kiosk/files"
+MEDIA_PATH = "/usr/local/bin/kiosk/media"
+BASE_PATH = "/usr/local/bin/kiosk/files"
 BASE_URL = "https://cloud-api.yandex.net/v1/disk/public/resources?public_key="
 PUBLIC_PATH = "https://disk.yandex.ru/d/1h6sFgkr5D2gJg"
 
