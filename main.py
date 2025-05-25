@@ -17,7 +17,7 @@ MEDIA_PATH = "/usr/local/bin/kiosk/media"
 BASE_PATH = "/usr/local/bin/kiosk/files"
 CONFIG_FILE = "/usr/local/etc/kiosk/config.env"
 BASE_URL = "https://cloud-api.yandex.net/v1/disk/public/resources?public_key="
-load_dotenv(dotenv_path=Path(CONFIG_FILE))
+load_dotenv(dotenv_path=CONFIG_FILE)
 PUBLIC_PATH = os.getenv("PUBLIC_PATH", "")
 SHOW_TIME = os.getenv("SHOW_TIME", 2)
 
