@@ -175,12 +175,10 @@ WantedBy=multi-user.target
 EOF
 
   chmod 644 "$SERVICE_FILE"
-  echo "info: kiosk.service unit create."
-
   systemctl daemon-reload
-  systemctl enable kiosk.service
-  systemctl restart kiosk.service
-  echo "info: kiosk.service enable and run."
+  echo "info: kiosk.service unit create."
+  echo "Add PUBLIC_PATH and SHOW_TIME in $CONFIG_FILE"
+  echo "and systemctl enable kiosk.service"
 }
 
 main() { 
