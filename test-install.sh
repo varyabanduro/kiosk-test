@@ -113,9 +113,14 @@ install_venv() {
     echo "error: Не удалось создать виртуальное окружение"
     return 1
   }
+
+  cat > "${PROJECT_DIR}/requirements.txt" <<EOF
+Это первая строка.
+Это вторая строка.
+EOF
   echo "python-vlc
   requests
-  python-dotenv" > "${PROJECT_DIR}/requirements.txt"
+  python-dotenv" > 
   
   PIP="${PROJECT_DIR}/.venv/bin/pip"
   "$PIP" install --upgrade
@@ -182,14 +187,14 @@ main() {
   [[ "$REMOVE" -eq '1' ]] && remove_kiosk
 
   install_software 'curl' 'curl'
-  install_software "python3-pip" "pip3"
-  install_software "python3-tk" 
+  install_software "python-pip" "pip3"
+  install_software "python3-tk" ""
 
   install -o nobody -g nogroup -m 755 -d \
     "$PROJECT_DIR" \
     "$PROJECT_DIR/files" \
-    "$PROJECT_DIR/media" \
-    "$PROJECT_DIR/requirements.txt" 
+    "$PROJECT_DIR/media" 
+    
   install_venv || return 1
   download_kiosk || return 1
   install_kiosk_service
