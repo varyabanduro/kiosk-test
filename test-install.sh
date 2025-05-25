@@ -180,7 +180,7 @@ EOF
   systemctl enable kiosk.service
   echo "info: kiosk.service unit create."
   echo "Add PUBLIC_PATH and SHOW_TIME in $CONFIG_DIR/config.env"
-  echo "and sudo systemctl restart kiosk.service"
+  echo "and execute sudo systemctl restart kiosk.service"
 }
 
 main() { 
