@@ -132,7 +132,7 @@ EOF
 }
 
 download_kiosk() {
-  DOWNLOAD_LINK="https://github.com/varyabanduro/kiosk-test"
+  DOWNLOAD_LINK="https://github.com/varyabanduro/kiosk-test/raw/main"
 
   if curl -f -o "${PROJECT_DIR}/main.py" "${DOWNLOAD_LINK}/main.py"; then
     echo "main.py downloaded to ${PROJECT_DIR}"
