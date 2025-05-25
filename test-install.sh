@@ -118,9 +118,6 @@ install_venv() {
 Это первая строка.
 Это вторая строка.
 EOF
-  echo "python-vlc
-  requests
-  python-dotenv" > 
   
   PIP="${PROJECT_DIR}/.venv/bin/pip"
   "$PIP" install --upgrade
