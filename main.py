@@ -18,7 +18,7 @@ BASE_PATH = "/usr/local/bin/kiosk/files"
 CONFIG_FILE = "/usr/local/etc/kiosk/config.env"
 BASE_URL = "https://cloud-api.yandex.net/v1/disk/public/resources?public_key="
 load_dotenv(dotenv_path=CONFIG_FILE)
-PUBLIC_PATH = os.getenv("PUBLIC_PATH", "")
+PUBLIC_PATH = os.getenv("PUBLIC_PATH", None)
 SHOW_TIME = os.getenv("SHOW_TIME", 2)
 
 @contextmanager
@@ -56,12 +56,14 @@ class Media:
         self.lock = threading.Lock()
 
     def _fetch_url(self) -> dict:
+        if not self.public_url:
+            raise ValueError(f"Add PUBLIC_PATH in {CONFIG_FILE}")
         resp = requests.get(self.base_url + self.public_url)
         if resp.status_code != 200:
-            raise ValueError(f"Ошибка API: {resp.status_code}")
+            raise ValueError(f"API error status code: {resp.status_code}")
         data = resp.json()
         if data.get("type", None) != "dir":
-            raise ValueError("Ссылка не ведёт на папку")
+            raise ValueError("The link does not lead to the folder")
         return data
 
     def _get_local_media(self):
@@ -85,9 +87,8 @@ class Media:
         try:
             data = self._fetch_url()
         except Exception as e:
-            message = f"Ошибка в запросе к: {self.public_url}: {e}"
-            logging.error(message)
-            return message
+            logging.error(str(e))
+            return str(e)
         else:
             logging.info(f"Запрос к {self.public_url} ОК")
 
@@ -111,25 +112,18 @@ class Media:
     def _download_file(self, filename, url):
         """Загрузить файл по URL в указанную папку"""
         try:
-            # Создаем папку для загрузок, если не существует
-            os.makedirs(self.path, exist_ok=True)
-
-            # Загружаем файл
             response = requests.get(url, stream=True)
             response.raise_for_status()
 
-            # Полный путь для сохранения
             save_path = os.path.join(self.path, filename)
-            print(save_path)
 
-            # Сохраняем файл
             with open(save_path, 'wb') as f:
                 for chunk in response.iter_content(chunk_size=8192):
                     if chunk:
                         f.write(chunk)
 
         except Exception as e:
-            logging.warning(f"Ошибка скачивания {filename} {e}")
+            logging.warning(f"Ошибка скачивания {filename}: {e}")
         else:
             logging.info(f"Файл {filename} скачен")
 
@@ -210,7 +204,7 @@ class NewVLC:
             case str():
                 logging.info(media.download)
                 self.base_player.video_set_marquee_int(vlc.VideoMarqueeOption.Enable, 1)
-                self.base_player.video_set_marquee_string(vlc.VideoMarqueeOption.Text, f"media.download")
+                self.base_player.video_set_marquee_string(vlc.VideoMarqueeOption.Text, media.download)
                 links = [ os.path.join(BASE_PATH, "download.mp4"),]
             case None:
                 logging.info(f"Файлы не требую загрузки")
