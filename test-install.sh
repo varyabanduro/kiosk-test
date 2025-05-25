@@ -175,12 +175,12 @@ WantedBy=multi-user.target
 EOF
 
   chmod 644 "$SERVICE_FILE"
-  echo "info: kiosk.service unit-файл создан."
+  echo "info: kiosk.service unit create."
 
   systemctl daemon-reload
   systemctl enable kiosk.service
   systemctl restart kiosk.service
-  echo "info: kiosk.service включён и запущен."
+  echo "info: kiosk.service enable and run."
 }
 
 main() { 
@@ -200,7 +200,9 @@ main() {
     "$PROJECT_DIR" \
     "$PROJECT_DIR/files" \
     "$PROJECT_DIR/media" 
-    
+
+  install -o nobody -g nogroup -m 755 /dev/null "$CONFIG_FILE"
+  
   install_venv || return 1
   download_kiosk || return 1
   install_kiosk_service
