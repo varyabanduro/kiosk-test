@@ -188,7 +188,9 @@ main() {
   [[ "$REMOVE" -eq '1' ]] && remove_kiosk
 
   install_software 'curl'
-  install_software "python3-pip" 
+  install_software "vlc"
+  install_software "python3-pip"
+  install_software "python3-venv" 
   install_software "python3-tk"
 
   install -o nobody -g nogroup -m 755 -d \
