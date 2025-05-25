@@ -8,15 +8,18 @@ import logging
 import threading
 import tkinter as tk
 from contextlib import contextmanager
+from dotenv import load_dotenv
 
 
 logging.basicConfig(level=logging.INFO)
 
 MEDIA_PATH = "/usr/local/bin/kiosk/media"
 BASE_PATH = "/usr/local/bin/kiosk/files"
+CONFIG_FILE = "/usr/local/etc/kiosk/config.env"
 BASE_URL = "https://cloud-api.yandex.net/v1/disk/public/resources?public_key="
-PUBLIC_PATH = "https://disk.yandex.ru/d/1h6sFgkr5D2gJg"
-
+load_dotenv(dotenv_path=Path(CONFIG_FILE))
+PUBLIC_PATH = os.getenv("PUBLIC_PATH", "")
+SHOW_TIME = os.getenv("SHOW_TIME", 2)
 
 @contextmanager
 def x_server():
@@ -36,11 +39,11 @@ def x_server():
     try:
         yield proc
     finally:
-        print("STOP X")
+        logging.info("STOP X")
         try:
             os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
         except ProcessLookupError:
-            pass  # уже завершился
+            pass
 
 
 
@@ -57,7 +60,7 @@ class Media:
         if resp.status_code != 200:
             raise ValueError(f"Ошибка API: {resp.status_code}")
         data = resp.json()
-        if data.get("type") != "dir":
+        if data.get("type", None) != "dir":
             raise ValueError("Ссылка не ведёт на папку")
         return data
 
@@ -82,7 +85,9 @@ class Media:
         try:
             data = self._fetch_url()
         except Exception as e:
-            logging.error(f"Ошибка в запросе к: {self.public_url}")
+            message = f"Ошибка в запросе к: "{self.public_url}": {e}"
+            logging.error(message)
+            return message
         else:
             logging.info(f"Запрос к {self.public_url} ОК")
 
@@ -133,6 +138,10 @@ class Media:
         """Пиводит папку в соответствие с ЯДиском"""
         folder = self._get_local_media()
         disk = self._get_disk_media()
+        if type(disk) == str():
+            with self.lock:
+                self.download = disk
+            return 
         delete_media = folder.keys() - disk.keys()
         download_media = disk.keys() - folder.keys()
 
@@ -143,7 +152,7 @@ class Media:
         logging.info(f"{len(download_media)} для загрузки")
         for i in download_media:
             with self.lock:
-                self.download = i[0]
+                self.download = f"Файл {i[0]} загружается"
             self._download_file(i[0], disk[i])
             with self.lock:
                 self.download = None
@@ -163,14 +172,14 @@ class NewVLC:
         self.widget.geometry(f"{screen_width}x{screen_height}+0+0")
 
         self.vlc_instance = vlc.Instance(
-#            "--quiet",
+            "--quiet",
             "--no-xlib",
             "--avcodec-hw=none",
             "--autoscale",
             "--fullscreen",
             "--no-mouse-events",
             "--no-audio",
-            f"--image-duration=2"
+            f"--image-duration={SHOW_TIME}"
             )
 
         self.base_player = self.vlc_instance.media_player_new()
@@ -183,15 +192,12 @@ class NewVLC:
                 self._update_manager,
                 media
                 )
-
-
+        
         self.list_player = self.vlc_instance.media_list_player_new()
         self.list_player.set_media_player(self.base_player)
         self.list_player.set_playback_mode(vlc.PlaybackMode.loop)
 
         self._update_manager(None, media)
-#        self.list_player.play()
-
 
     def _update_manager(self, event, media):
         if not self.thread or not self.thread.is_alive():
@@ -202,9 +208,9 @@ class NewVLC:
 
         match media.download:
             case str():
-                logging.info(f"Файл {media.download} загружается")
+                logging.info(media.download)
                 self.base_player.video_set_marquee_int(vlc.VideoMarqueeOption.Enable, 1)
-                self.base_player.video_set_marquee_string(vlc.VideoMarqueeOption.Text, f"Загружаем {media.download}")
+                self.base_player.video_set_marquee_string(vlc.VideoMarqueeOption.Text, f"media.download")
                 links = [ os.path.join(BASE_PATH, "download.mp4"),]
             case None:
                 logging.info(f"Файлы не требую загрузки")
@@ -212,7 +218,7 @@ class NewVLC:
                 links = media.get_links()
                 if links == []:
                     links = [os.path.join(BASE_PATH, "logo.jpg"),]
-        # cur_pl.video_set_subtitle_file("subtitles.srt")
+
         self.media_list = self.vlc_instance.media_list_new(links)
         self.list_player.set_media_list(self.media_list)
         self.list_player.play()
