@@ -222,4 +222,5 @@ with x_server() as x:
     time.sleep(1)
     media = Media()
     NewVLC(media)
-    input("Ждём")
+    while True:
+        pass
