@@ -85,7 +85,7 @@ class Media:
         try:
             data = self._fetch_url()
         except Exception as e:
-            message = f"Ошибка в запросе к: "{self.public_url}": {e}"
+            message = f"Ошибка в запросе к: f"{self.public_url}": {e}"
             logging.error(message)
             return message
         else:
