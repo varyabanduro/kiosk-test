@@ -7,7 +7,7 @@
 # fi
 
 PROJECT_DIR=/usr/local/bin/kiosk
-CONFIG_FILE=/usr/local/etc/kiosk/config.env
+CONFIG_DIR=/usr/local/etc/kiosk
 INSTALL_USER='nobody'
 
 curl() {
@@ -197,9 +197,10 @@ main() {
   install -o nobody -g nogroup -m 755 -d \
     "$PROJECT_DIR" \
     "$PROJECT_DIR/files" \
-    "$PROJECT_DIR/media" 
+    "$PROJECT_DIR/media" \
+    "$CONFIG_DIR
 
-  install -o nobody -g nogroup -m 755 /dev/null "$CONFIG_FILE"
+  install -o nobody -g nogroup -m 755 /dev/null "$CONFIG_DIR/config.env""
   
   install_venv || return 1
   download_kiosk || return 1
