@@ -57,7 +57,8 @@ class Media:
 
     def _fetch_url(self) -> dict:
         if not self.public_url:
-            raise ValueError(f"Add PUBLIC_PATH in {CONFIG_FILE}")
+            raise ValueError(f"Add PUBLIC_PATH in {CONFIG_FILE}\n"
+                             " and restart kisosk.service")
         resp = requests.get(self.base_url + self.public_url)
         if resp.status_code != 200:
             raise ValueError(f"API error status code: {resp.status_code}")
