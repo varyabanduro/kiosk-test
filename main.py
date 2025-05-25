@@ -115,6 +115,7 @@ class Media:
 
             # Полный путь для сохранения
             save_path = os.path.join(self.path, filename)
+            print(save_path)
 
             # Сохраняем файл
             with open(save_path, 'wb') as f:
