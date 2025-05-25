@@ -153,7 +153,7 @@ download_kiosk() {
 
 install_kiosk_service() {
   local SERVICE_FILE="/etc/systemd/system/kiosk.service"
-  local PYTHON_EXEC="${PROJECT_DIR}/venv/bin/python"
+  local PYTHON_EXEC="${PROJECT_DIR}/.venv/bin/python"
   local MAIN_SCRIPT="${PROJECT_DIR}/main.py"
 
   cat >"$SERVICE_FILE" <<EOF
