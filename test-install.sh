@@ -180,7 +180,7 @@ EOF
   systemctl enable kiosk.service
   echo "info: kiosk.service unit create."
   echo "Add PUBLIC_PATH and SHOW_TIME in $CONFIG_DIR/config.env"
-  echo "and execute sudo systemctl restart kiosk.service"
+  echo "and restart kiosk.service"
 }
 
 main() { 
@@ -202,7 +202,7 @@ main() {
     "$PROJECT_DIR/media" \
     "$CONFIG_DIR"
 
-  install -o nobody -g nogroup -m 755 /dev/null "$CONFIG_DIR/config.env""
+  install -o nobody -g nogroup -m 755 /dev/null "$CONFIG_DIR/config.env"
   
   install_venv || return 1
   download_kiosk || return 1
