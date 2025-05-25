@@ -6,8 +6,13 @@
 #   KIOSK_IS_INSTALLED_BEFORE_RUNNING_SCRIPT=0
 # fi
 
-PROJECT_DIR=/usr/local/?/kiosk
+PROJECT_DIR=/usr/local/bin/kiosk
+CONFIG_FILE=/usr/local/etc/kiosk/config.env
 INSTALL_USER='nobody'
+
+curl() {
+  $(type -P curl) -L -q --retry 5 --retry-delay 10 --retry-max-time 60 "$@"
+}
 
 identify_the_operating_system_and_architecture() {
   if [[ "$(uname)" != 'Linux' ]]; then
@@ -103,6 +108,72 @@ install_software() {
   fi
 }
 
+install_venv() {
+  python3 -m venv "$PROJECT_DIR/.venv" || {
+    echo "error: Не удалось создать виртуальное окружение"
+    return 1
+  }
+  echo "python-vlc
+  requests
+  python-dotenv" > "${PROJECT_DIR}/requirements.txt"
+  
+  PIP="${PROJECT_DIR}/.venv/bin/pip"
+  "$PIP" install --upgrade
+  "$PIP" install -r "${PROJECT_DIR}/requirements.txt" || {
+      echo "error: Не удалось установить зависимости"
+      return 1
+    }
+
+}
+
+download_kiosk() {
+  DOWNLOAD_LINK="https://github.com/varyabanduro/kiosk-test"
+
+  if curl -f -o "${PROJECT_DIR}/main.py" "${DOWNLOAD_LINK}/main.py"; then
+    echo "main.py downloaded to ${PROJECT_DIR}"
+  else
+    echo "error: Failed to download main.py"
+    return 1
+  fi
+
+  if curl -f -o "${PROJECT_DIR}/files/download.mp4" "${DOWNLOAD_LINK}/download.mp4"; then
+    echo "download.mp4 downloaded to ${PROJECT_DIR}/files"
+  else
+    echo "error: Failed to download download.mp4"
+    return 1
+  fi
+    
+}
+
+install_kiosk_service() {
+  local SERVICE_FILE="/etc/systemd/system/kiosk.service"
+  local PYTHON_EXEC="${PROJECT_DIR}/venv/bin/python"
+  local MAIN_SCRIPT="${PROJECT_DIR}/main.py"
+
+  cat >"$SERVICE_FILE" <<EOF
+[Unit]
+Description=Kiosk Python Service
+After=network.target
+
+[Service]
+User=nobody
+WorkingDirectory=${PROJECT_DIR}
+ExecStart=${PYTHON_EXEC} ${MAIN_SCRIPT}
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+  chmod 644 "$SERVICE_FILE"
+  echo "info: kiosk.service unit-файл создан."
+
+  systemctl daemon-reload
+  systemctl enable kiosk.service
+  systemctl restart kiosk.service
+  echo "info: kiosk.service включён и запущен."
+}
+
 main() { 
   check_if_running_as_root || return 1
   identify_the_operating_system_and_architecture || return 1
@@ -112,6 +183,15 @@ main() {
 
   install_software 'curl' 'curl'
   install_software "python3-pip" "pip3"
+  install_software "python3-tk" 
+
+  install -o nobody -g nogroup -m 755 -d \
+    "$PROJECT_DIR" \
+    "$PROJECT_DIR/files" \
+    "$PROJECT_DIR/media" \
+    "$PROJECT_DIR/requirements.txt" 
+  install_venv || return 1
+  download_kiosk || return 1
   
 
 }
