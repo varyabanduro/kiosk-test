@@ -99,7 +99,11 @@ remove_kiosk() {
 install_software() {
   package_name="$1"
   file_to_detect="$2"
-  type -P "$file_to_detect" >/dev/null 2>&1 && return
+  
+  if apt list --installed "$package_name" 2>/dev/null | grep -q "^$package_name/"; then
+    echo "✅ Пакет $package_name уже установлен"
+    return 0
+  fi
   if ${PACKAGE_MANAGEMENT_INSTALL} "$package_name" >/dev/null 2>&1; then
     echo "info: $package_name is installed."
   else
