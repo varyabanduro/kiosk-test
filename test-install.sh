@@ -74,7 +74,7 @@ remove_kiosk() {
     exit 1
   fi
   
-  local delete_files=('/usr/local/?/kiosk' '/etc/systemd/system/kiosk.service')
+  local delete_files=('/usr/local/bin/kiosk' '/etc/systemd/system/kiosk.service' '/usr/local/etc/kiosk')
   [[ -d "$PROJECT_DIR" ]] && delete_files+=("$PROJECT_DIR")
   
   if ! systemctl disable kiosk.service; then
